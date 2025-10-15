@@ -1,6 +1,8 @@
 SRCS = pipex.c
+B_SRCS = pipex_bonus.c
 
 OBJS = $(SRCS:.c=.o)
+B_OBJS = $(B_SRCS:.c=.o)
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -15,6 +17,9 @@ all: $(NAME)
 $(NAME): $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft -o $(NAME)
 
+bonus: $(LIBFT) $(B_OBJS)
+	$(CC) $(CFLAGS) $(B_OBJS) -L$(LIBFT_DIR) -lft -o $(NAME)
+
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 
@@ -23,7 +28,7 @@ $(LIBFT):
 
 clean:
 	make clean -C $(LIBFT_DIR)
-	rm -rf $(OBJS)
+	rm -rf $(OBJS) $(B_OBJS)
 
 fclean: clean
 	make fclean -C $(LIBFT_DIR)
