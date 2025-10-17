@@ -6,48 +6,41 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 13:59:10 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/15 15:31:53 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/17 17:40:49 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include "libft/libft.h"
+#include "pipex.h"
 
-int	create_pipes(int argc, int **pipe_arr)
+int	create_pipes(t_data *data)
 {
 	int	i;
 
-	i = 1;
-	while (i < argc - 3)
+	i = 0;
+	while (i < data->num_cmd - 1)
 	{
-		if (pipe(pipe_arr[i]) == -1)
+		if (pipe(data->pipe_arr[i]) == -1)
 			return (0);
 		i++;
 	}
+	return (1);
 }
 
-int	run_first_cmd()
-{
-
-}
-
-int	close_pipes(int argc, int **pipe_arr, int i)
+void	close_pipes(t_data *data, int i)
 {
 	int	j;
 
-	j = 1;
-	while (j < argc  - 4)
+	j = 0;
+	while (j < data->num_cmd - 1)
 	{
 		if (j == i)
-			close(pipe_arr[j][0]);
-		else if (j == i + 1)
-			close(pipe_arr[j][1]);
+			close(data->pipe_arr[j][0]);
+		else if (j == i - 1)
+			close(data->pipe_arr[j][1]);
 		else
 		{
-			close(pipe_arr[j][0]);
-			close(pipe_arr[j][1]);
+			close(data->pipe_arr[j][0]);
+			close(data->pipe_arr[j][1]);
 		}
 		j++;
 	}
@@ -67,35 +60,70 @@ int	exec_cmd(char *cmd, int fd_in, int fd_out)
 	return (execve(cmd_path, args, NULL));
 }
 
+int	run_first_cmd(t_data *data, int	i)
+{
+	int	fd_in;
+
+	close_pipes(data, i);
+	fd_in = open(data->argv[1], O_RDONLY);
+	if (fd_in == -1)
+		return (0);
+	if (exec_cmd(data->argv[i + 2], fd_in, data->pipe_arr[i][1]) == -1)
+		return (0);
+	return (1);
+}
+
+int	run_last_cmd(t_data *data, int i)
+{
+	int	fd_out;
+
+	close_pipes(data, i);
+	fd_out = open(data->argv[i + 3], O_WRONLY);
+	if (fd_out == -1)
+		return (0);
+	if (exec_cmd(data->argv[i + 2], data->pipe_arr[i - 1][0], fd_out) == -1)
+		return (0);
+	return (1);	
+}
+
 int	main(int argc, char *argv[])
 {
-	int	**pipe_arr;
-	int	i;
+	t_data	data;
+	int		i;
 	pid_t	pid;
+	i
 
 	if (argc < 4)
 		return (1);
-	pipe_arr = (int **) malloc((argc - 1) * sizeof(int[2]));
-	if (pipe_arr == NULL)
+	data.num_cmd = argc - 3;
+	data.pipe_arr = (int **) malloc((data.num_cmd - 1) * sizeof(int*));
+
+	if (data.pipe_arr == NULL)
 		return (1);
-	create_pipes(argc, pipe_arr);
+	data.argv = argv;
+	create_pipes(&data);
 	i = 0;
-	while (i < argc - 3)
+	while (i < data.num_cmd)
 	{
 		pid = fork();
-		if (pid == -1);
+		if (pid == -1)
 			return (1);
 		if (pid == 0)
 		{
 			if (i == 0)
-				// call function for first command
-			else if (i == argc - 4)
-				// call function for last command
+				run_first_cmd(&data, i);
+			else if (i == data.num_cmd - 1)
+				run_last_cmd(&data, i);
 			else
 			{
-				close_pipes(argc, pipe_arr, i);
-				exec_cmd(argv[i + 2], pipe_arr[i][1], pipe_arr[i + 1][0]);
+				close_pipes(&data, i);
+				exec_cmd(argv[i + 2], data.pipe_arr[i - 1][1], data.pipe_arr[i][0]);
 			}
+		}
+		else
+		{
+			close_pipes(&data, -1);
+			waitpid(pid, NULL, 0);
 		}
 	}
 }

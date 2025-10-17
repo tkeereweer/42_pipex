@@ -6,13 +6,11 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 14:41:15 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/14 15:01:17 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/17 17:01:41 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include "libft/libft.h"
-#include <fcntl.h>
+#include "pipex.h"
 
 int	main(int argc, char *argv[])
 {

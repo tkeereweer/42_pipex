@@ -1,5 +1,5 @@
 SRCS = pipex.c
-B_SRCS = pipex_bonus.c
+B_SRCS = pipex_bonus2.c
 
 OBJS = $(SRCS:.c=.o)
 B_OBJS = $(B_SRCS:.c=.o)

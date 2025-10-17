@@ -6,14 +6,11 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 10:51:24 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/15 13:57:37 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/17 17:01:18 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include "libft/libft.h"
+#include "pipex.h"
 
 int	exec_cmd(char *cmd, int fd_in, int fd_out)
 {
